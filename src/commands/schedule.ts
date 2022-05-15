@@ -87,10 +87,15 @@ export const schedule: CommandInterface = {
 
 		const reply = await interaction.fetchReply() as Message
 
-		setInterval(() => {
+		const intervalId = setInterval(() => {
 			let [yesString, noString] = createString(yesEntry, noEntry); //array size
 			let mainEmbed = createEmbed(yesString, noString, timeScheduled, yesEntry, noEntry);
 			let buttons = createButton();
+			const [, , totalMinutes,] = getCountdown(timeScheduled)
+
+			if (totalMinutes < 0) { // stop updating when time 
+				clearInterval(intervalId);
+			}
 			reply.edit({
 				embeds: [mainEmbed],
 				components: [buttons],
