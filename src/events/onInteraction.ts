@@ -2,9 +2,7 @@ import { Interaction } from "discord.js";
 import { CommandList } from "../commands/_CommandList";
 import { errorHandler } from "../utils/errorHandler";
 
-export const onInteraction = async (
-	interaction: Interaction
-): Promise<void> => {
+export const onInteraction = async (interaction: Interaction): Promise<void> => {
 	try {
 		if (interaction.isCommand()) {
 			for (const Command of CommandList) {

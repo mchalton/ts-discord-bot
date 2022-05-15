@@ -5,9 +5,7 @@ import { getMaps } from "../modules/maps";
 import { getUserData } from "../modules/users";
 
 export const spinmap: CommandInterface = {
-	data: new SlashCommandBuilder()
-		.setName("spinmap")
-		.setDescription("Gets One Random Map"),
+	data: new SlashCommandBuilder().setName("spinmap").setDescription("Gets One Random Map"),
 
 	run: async (interaction) => {
 		const user = await getUserData(interaction.user.id);
@@ -24,11 +22,7 @@ export const spinmap: CommandInterface = {
 			var poolEmbed = new MessageEmbed()
 				.setColor("0xFF6F00" as ColorResolvable)
 				.setTitle("Retrieved Map: " + mapName)
-				.setURL(
-					"https://steamcommunity.com/sharedfiles/filedetails/?id=".concat(
-						mapID
-					)
-				)
+				.setURL("https://steamcommunity.com/sharedfiles/filedetails/?id=".concat(mapID))
 				.setDescription("Workshop ID: " + mapID)
 				.setTimestamp();
 

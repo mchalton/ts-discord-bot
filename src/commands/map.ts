@@ -8,12 +8,7 @@ export const map: CommandInterface = {
 	data: new SlashCommandBuilder()
 		.setName("map")
 		.setDescription("Change map on the server")
-		.addStringOption((option) =>
-			option
-				.setName("workshopid")
-				.setDescription("Enter a Workshop ID")
-				.setRequired(true)
-		) as SlashCommandBuilder,
+		.addStringOption((option) => option.setName("workshopid").setDescription("Enter a Workshop ID").setRequired(true)) as SlashCommandBuilder,
 
 	run: async (interaction) => {
 		const user = await getUserData(interaction.user.id);
@@ -22,14 +17,8 @@ export const map: CommandInterface = {
 
 			const workshopid = interaction.options.getString("workshopid")!;
 
-			const serverIP = fs.readFileSync(
-				"commands/serverinfo/serverinfo.txt",
-				"utf8"
-			);
-			const serverPW = fs.readFileSync(
-				"commands/serverinfo/serverpw.txt",
-				"utf8"
-			);
+			const serverIP = fs.readFileSync("commands/serverinfo/serverinfo.txt", "utf8");
+			const serverPW = fs.readFileSync("commands/serverinfo/serverpw.txt", "utf8");
 
 			var conn = new Rcon(serverIP, 27015, serverPW);
 
@@ -52,11 +41,7 @@ export const map: CommandInterface = {
 			var mapEmbed = new MessageEmbed()
 				.setColor("0xFF6F00" as ColorResolvable)
 				.setTitle("Successfully Changed Map to: " + workshopid)
-				.setURL(
-					"https://steamcommunity.com/sharedfiles/filedetails/?id=".concat(
-						workshopid
-					)
-				);
+				.setURL("https://steamcommunity.com/sharedfiles/filedetails/?id=".concat(workshopid));
 
 			await interaction.reply({ embeds: [mapEmbed] });
 		} else {

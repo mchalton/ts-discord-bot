@@ -15,10 +15,7 @@ import * as dotenv from "dotenv";
 
 	BOT.on("ready", async () => await onReady(BOT));
 
-	BOT.on(
-		"interactionCreate",
-		async (interaction) => await onInteraction(interaction)
-	);
+	BOT.on("interactionCreate", async (interaction) => await onInteraction(interaction));
 
 	await connectDatabase();
 

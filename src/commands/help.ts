@@ -3,18 +3,14 @@ import { ColorResolvable, MessageEmbed } from "discord.js";
 import { CommandInterface } from "src/interfaces/CommandInterface";
 
 export const help: CommandInterface = {
-	data: new SlashCommandBuilder()
-		.setName("help")
-		.setDescription("Purpose and List of Commands"),
+	data: new SlashCommandBuilder().setName("help").setDescription("Purpose and List of Commands"),
 
 	run: async (interaction) => {
 		// Embed
 		var helpEmbed = new MessageEmbed()
 			.setColor("0xFF6F00" as ColorResolvable)
 			.setTitle("BotCrayon")
-			.setDescription(
-				"I am used to help run the 10mans hosted by Maps Of No Trades.\nI also have a few fun commands!"
-			)
+			.setDescription("I am used to help run the 10mans hosted by Maps Of No Trades.\nI also have a few fun commands!")
 			.addFields(
 				{ name: "\u200B", value: "**User Commands**" },
 				{ name: "/help", value: "Displays This!" },

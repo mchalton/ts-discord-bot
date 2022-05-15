@@ -5,9 +5,7 @@ import Rcon from "ts-rcon";
 import { getUserData } from "../modules/users";
 
 export const start: CommandInterface = {
-	data: new SlashCommandBuilder()
-		.setName("start")
-		.setDescription("Start a 10 Man Game"),
+	data: new SlashCommandBuilder().setName("start").setDescription("Start a 10 Man Game"),
 
 	run: async (interaction) => {
 		const user = await getUserData(interaction.user.id);
@@ -15,14 +13,8 @@ export const start: CommandInterface = {
 		if (user?.isAdmin) {
 			const fs = require("fs");
 
-			const serverIP = fs.readFileSync(
-				"commands/serverinfo/serverinfo.txt",
-				"utf8"
-			);
-			const serverPW = fs.readFileSync(
-				"commands/serverinfo/serverpw.txt",
-				"utf8"
-			);
+			const serverIP = fs.readFileSync("commands/serverinfo/serverinfo.txt", "utf8");
+			const serverPW = fs.readFileSync("commands/serverinfo/serverpw.txt", "utf8");
 
 			const conn = new Rcon(serverIP, 27015, serverPW);
 
@@ -45,9 +37,7 @@ export const start: CommandInterface = {
 			conn.connect();
 
 			// Embed
-			var startEmbed = new MessageEmbed()
-				.setColor("0xFF6F00" as ColorResolvable)
-				.setTitle("Warmup Ended");
+			var startEmbed = new MessageEmbed().setColor("0xFF6F00" as ColorResolvable).setTitle("Warmup Ended");
 
 			await interaction.reply({ embeds: [startEmbed] });
 		} else {

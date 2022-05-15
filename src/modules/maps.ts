@@ -17,17 +17,15 @@ export const getMaps = async (): Promise<MapInterface[]> => {
 		return mapList;
 	} catch (error) {
 		errorHandler("getMaps module", error);
-		return []
+		return [];
 	}
 };
 
-
-export const deleteMap = async (map_id : string) => {
-  try {
-    await MapModel.deleteOne({ id : map_id})
-
-  } catch (error) {
+export const deleteMap = async (map_id: string) => {
+	try {
+		await MapModel.deleteOne({ id: map_id });
+	} catch (error) {
 		errorHandler("deleteMap module", error);
 		return false;
-  }
-}
+	}
+};

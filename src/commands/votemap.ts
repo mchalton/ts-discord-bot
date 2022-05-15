@@ -1,11 +1,5 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
-import {
-	ColorResolvable,
-	MessageActionRow,
-	MessageEmbed,
-	MessageSelectMenu,
-	SelectMenuInteraction,
-} from "discord.js";
+import { ColorResolvable, MessageActionRow, MessageEmbed, MessageSelectMenu, SelectMenuInteraction } from "discord.js";
 import { MapInterface } from "src/database/models/MapModel";
 import { CommandInterface } from "src/interfaces/CommandInterface";
 import { getMaps } from "../modules/maps";
@@ -15,12 +9,7 @@ export const votemap: CommandInterface = {
 	data: new SlashCommandBuilder()
 		.setName("votemap")
 		.setDescription("Vote on 5 Random Maps")
-		.addNumberOption((option) =>
-			option
-				.setName("count")
-				.setDescription("Number of maps")
-				.setRequired(true)
-		) as SlashCommandBuilder,
+		.addNumberOption((option) => option.setName("count").setDescription("Number of maps").setRequired(true)) as SlashCommandBuilder,
 
 	run: async (interaction) => {
 		if (!interaction.channel) return;
@@ -49,14 +38,10 @@ export const votemap: CommandInterface = {
 			for (let i = 0; i < mapCount; i++) {
 				poolEmbed.addField(
 					mapList[i].name,
-					"[Link](https://steamcommunity.com/sharedfiles/filedetails/?id=".concat(
-						mapList[i].id
-					) + ")\n\u200b"
+					"[Link](https://steamcommunity.com/sharedfiles/filedetails/?id=".concat(mapList[i].id) + ")\n\u200b"
 				);
 			}
-			const menu = new MessageSelectMenu()
-				.setCustomId("select")
-				.setPlaceholder("Nothing selected");
+			const menu = new MessageSelectMenu().setCustomId("select").setPlaceholder("Nothing selected");
 
 			for (let i = 0; i < mapCount; i++) {
 				const optionName = "option" + i.toString();
@@ -97,32 +82,29 @@ export const votemap: CommandInterface = {
 			time: interactionTimeout,
 		});
 
-		collector.on(
-			"collect",
-			async (interactEvent: SelectMenuInteraction) => {
-				var optionSelected = interactEvent;
-				var user = `<@${interactEvent.user.id}>`;
+		collector.on("collect", async (interactEvent: SelectMenuInteraction) => {
+			var optionSelected = interactEvent;
+			var user = `<@${interactEvent.user.id}>`;
 
-				console.log(`${user} selected ${optionSelected}`);
+			console.log(`${user} selected ${optionSelected}`);
 
-				for (let i = 0; i < optionList.length; ++i) {
-					if (interactEvent.values[0] == optionList[i]) {
-						await interactEvent.deferUpdate();
+			for (let i = 0; i < optionList.length; ++i) {
+				if (interactEvent.values[0] == optionList[i]) {
+					await interactEvent.deferUpdate();
 
-						if (options[i].indexOf(user) > -1) {
-							options[i].splice(options[i].indexOf(user), 1);
-						} else {
-							options[i].push(user);
-						}
-
-						const optionsString = createString(options);
-						const poolEmbed = createEmbed(mapList, optionsString);
-
-						await interactEvent.editReply({ embeds: [poolEmbed] });
+					if (options[i].indexOf(user) > -1) {
+						options[i].splice(options[i].indexOf(user), 1);
+					} else {
+						options[i].push(user);
 					}
+
+					const optionsString = createString(options);
+					const poolEmbed = createEmbed(mapList, optionsString);
+
+					await interactEvent.editReply({ embeds: [poolEmbed] });
 				}
 			}
-		);
+		});
 
 		collector.on("end", async (i) => {
 			console.log("Ended Vote");
@@ -137,12 +119,7 @@ const createEmbed = (mapList: MapInterface[], optionsString: string[]) => {
 		.setTimestamp();
 
 	for (let i = 0; i < optionsString.length; ++i) {
-		let value =
-			"[Link](https://steamcommunity.com/sharedfiles/filedetails/?id=".concat(
-				mapList[i].id
-			) +
-			")\n " +
-			optionsString[i];
+		let value = "[Link](https://steamcommunity.com/sharedfiles/filedetails/?id=".concat(mapList[i].id) + ")\n " + optionsString[i];
 		if (optionsString[i] != "\u200b") value += "\n\u200b";
 		poolEmbed.addField(mapList[i].name, value);
 	}

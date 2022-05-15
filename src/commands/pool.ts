@@ -5,9 +5,7 @@ import { SlashCommandBuilder } from "@discordjs/builders";
 import { ColorResolvable, MessageEmbed } from "discord.js";
 
 export const pool: CommandInterface = {
-	data: new SlashCommandBuilder()
-		.setName("pool")
-		.setDescription("Displays the Map Pool"),
+	data: new SlashCommandBuilder().setName("pool").setDescription("Displays the Map Pool"),
 
 	run: async (interaction) => {
 		const mapList = await getMaps();

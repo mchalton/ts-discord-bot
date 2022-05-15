@@ -8,12 +8,7 @@ export const removeMap: CommandInterface = {
 	data: new SlashCommandBuilder()
 		.setName("removemap")
 		.setDescription("Removes a Map from the Pool")
-		.addStringOption((option) =>
-			option
-				.setName("workshopid")
-				.setDescription("Enter a Workshop ID")
-				.setRequired(true)
-		) as SlashCommandBuilder,
+		.addStringOption((option) => option.setName("workshopid").setDescription("Enter a Workshop ID").setRequired(true)) as SlashCommandBuilder,
 
 	run: async (interaction) => {
 		const workshopid = interaction.options.getString("workshopid")!;

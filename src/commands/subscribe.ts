@@ -4,9 +4,7 @@ import { CommandInterface } from "src/interfaces/CommandInterface";
 import { subscribeUser } from "../modules/users";
 
 export const subscribe: CommandInterface = {
-	data: new SlashCommandBuilder()
-		.setName("subscribe")
-		.setDescription("Subscribe to get notified by the Scheduler!"),
+	data: new SlashCommandBuilder().setName("subscribe").setDescription("Subscribe to get notified by the Scheduler!"),
 
 	run: async (interaction) => {
 		await subscribeUser(interaction.user.id);

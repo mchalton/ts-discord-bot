@@ -6,9 +6,7 @@ import { Client } from "discord.js";
 
 export const onReady = async (BOT: Client): Promise<void> => {
 	try {
-		const rest = new REST({ version: "9" }).setToken(
-			process.env.BOT_TOKEN as string
-		);
+		const rest = new REST({ version: "9" }).setToken(process.env.BOT_TOKEN as string);
 
 		const commandData: {
 			name: string;
@@ -27,13 +25,7 @@ export const onReady = async (BOT: Client): Promise<void> => {
 				}
 			)
 		);
-		await rest.put(
-			Routes.applicationGuildCommands(
-				BOT.user?.id || "missing token",
-				process.env.GUILD_ID as string
-			),
-			{ body: commandData }
-		);
+		await rest.put(Routes.applicationGuildCommands(BOT.user?.id || "missing token", process.env.GUILD_ID as string), { body: commandData });
 		console.log("Bot has connected to Discord!");
 	} catch (err) {
 		errorHandler("onReady event", err);

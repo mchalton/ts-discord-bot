@@ -1,17 +1,9 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { CommandInterface } from "../interfaces/CommandInterface";
-import {
-	MessageActionRow,
-	MessageButton,
-	MessageEmbed,
-	ColorResolvable,
-	TextChannel,
-} from "discord.js";
+import { MessageActionRow, MessageButton, MessageEmbed, ColorResolvable, TextChannel } from "discord.js";
 
 export const fiveMan: CommandInterface = {
-	data: new SlashCommandBuilder()
-		.setName("5man")
-		.setDescription("Run a 5 Man Queue!"),
+	data: new SlashCommandBuilder().setName("5man").setDescription("Run a 5 Man Queue!"),
 
 	run: async (interaction) => {
 		if (!interaction.channel) return;
@@ -33,23 +25,11 @@ export const fiveMan: CommandInterface = {
 
 		// Buttons
 		const buttons = new MessageActionRow().addComponents(
-			new MessageButton()
-				.setCustomId("yes5man")
-				.setLabel("Yes")
-				.setStyle("SUCCESS")
-				.setEmoji("👍"),
+			new MessageButton().setCustomId("yes5man").setLabel("Yes").setStyle("SUCCESS").setEmoji("👍"),
 
-			new MessageButton()
-				.setCustomId("maybe5man")
-				.setLabel("Maybe")
-				.setStyle("PRIMARY")
-				.setEmoji("🤷"),
+			new MessageButton().setCustomId("maybe5man").setLabel("Maybe").setStyle("PRIMARY").setEmoji("🤷"),
 
-			new MessageButton()
-				.setCustomId("no5man")
-				.setLabel("No")
-				.setStyle("DANGER")
-				.setEmoji("👎")
+			new MessageButton().setCustomId("no5man").setLabel("No").setStyle("DANGER").setEmoji("👎")
 		);
 
 		await interaction.reply({
@@ -58,9 +38,7 @@ export const fiveMan: CommandInterface = {
 		});
 
 		const channelName = (interaction.channel as TextChannel).name;
-		console.log(
-			`Schedule triggered by ${interaction.user.tag} in #${channelName}.`
-		);
+		console.log(`Schedule triggered by ${interaction.user.tag} in #${channelName}.`);
 
 		const interactionTimeout = 150 * 60 * 1000; // 150 Minutes * 60 to make into seconds * 1000 to make it into miliseconds
 
@@ -71,9 +49,7 @@ export const fiveMan: CommandInterface = {
 		collector.on("collect", async (i) => {
 			let user = i.user.username;
 			const buttonClicked = i.customId;
-			console.log(
-				`Schedule Button Clicked:\n   User: ${user}\n   ButtonClicked: ${buttonClicked}`
-			);
+			console.log(`Schedule Button Clicked:\n   User: ${user}\n   ButtonClicked: ${buttonClicked}`);
 
 			if (buttonClicked === "yes") {
 				await i.deferUpdate();
@@ -92,19 +68,8 @@ export const fiveMan: CommandInterface = {
 
 				yesEntry.push(user);
 
-				let [yesString, maybeString, noString] = createString(
-					yesEntry,
-					maybeEntry,
-					noEntry
-				); //array size
-				let mainEmbed = createEmbed(
-					yesString,
-					maybeString,
-					noString,
-					yesEntry,
-					maybeEntry,
-					noEntry
-				);
+				let [yesString, maybeString, noString] = createString(yesEntry, maybeEntry, noEntry); //array size
+				let mainEmbed = createEmbed(yesString, maybeString, noString, yesEntry, maybeEntry, noEntry);
 				let buttons = createButton();
 
 				await i.deleteReply();
@@ -129,19 +94,8 @@ export const fiveMan: CommandInterface = {
 
 				maybeEntry.push(user);
 
-				let [yesString, maybeString, noString] = createString(
-					yesEntry,
-					maybeEntry,
-					noEntry
-				);
-				let mainEmbed = createEmbed(
-					yesString,
-					maybeString,
-					noString,
-					yesEntry,
-					maybeEntry,
-					noEntry
-				);
+				let [yesString, maybeString, noString] = createString(yesEntry, maybeEntry, noEntry);
+				let mainEmbed = createEmbed(yesString, maybeString, noString, yesEntry, maybeEntry, noEntry);
 				let buttons = createButton();
 
 				await i.editReply({
@@ -165,19 +119,8 @@ export const fiveMan: CommandInterface = {
 
 				noEntry.push(user);
 
-				let [yesString, maybeString, noString] = createString(
-					yesEntry,
-					maybeEntry,
-					noEntry
-				);
-				let mainEmbed = createEmbed(
-					yesString,
-					maybeString,
-					noString,
-					yesEntry,
-					maybeEntry,
-					noEntry
-				);
+				let [yesString, maybeString, noString] = createString(yesEntry, maybeEntry, noEntry);
+				let mainEmbed = createEmbed(yesString, maybeString, noString, yesEntry, maybeEntry, noEntry);
 				let buttons = createButton();
 
 				await i.editReply({
@@ -192,26 +135,11 @@ export const fiveMan: CommandInterface = {
 			console.log("Ended 5Man Message");
 
 			var buttons = new MessageActionRow().addComponents(
-				new MessageButton()
-					.setCustomId("yes5man")
-					.setLabel("Yes")
-					.setStyle("SUCCESS")
-					.setEmoji("👍")
-					.setDisabled(true),
+				new MessageButton().setCustomId("yes5man").setLabel("Yes").setStyle("SUCCESS").setEmoji("👍").setDisabled(true),
 
-				new MessageButton()
-					.setCustomId("maybe5man")
-					.setLabel("Maybe")
-					.setStyle("PRIMARY")
-					.setEmoji("🤷")
-					.setDisabled(true),
+				new MessageButton().setCustomId("maybe5man").setLabel("Maybe").setStyle("PRIMARY").setEmoji("🤷").setDisabled(true),
 
-				new MessageButton()
-					.setCustomId("no5man")
-					.setLabel("No")
-					.setStyle("DANGER")
-					.setEmoji("👎")
-					.setDisabled(true)
+				new MessageButton().setCustomId("no5man").setLabel("No").setStyle("DANGER").setEmoji("👎").setDisabled(true)
 			);
 
 			await interaction.editReply({
@@ -221,14 +149,7 @@ export const fiveMan: CommandInterface = {
 	},
 };
 
-const createEmbed = (
-	yesString: string,
-	maybeString: string,
-	noString: string,
-	yesEntry: string[],
-	maybeEntry: string[],
-	noEntry: string[]
-) => {
+const createEmbed = (yesString: string, maybeString: string, noString: string, yesEntry: string[], maybeEntry: string[], noEntry: string[]) => {
 	const mainEmbed = new MessageEmbed()
 		.setColor("0xFF6F00" as ColorResolvable)
 		.setTitle("5 Man")
@@ -255,32 +176,16 @@ const createEmbed = (
 
 const createButton = () => {
 	const buttons = new MessageActionRow().addComponents(
-		new MessageButton()
-			.setCustomId("yes5man")
-			.setLabel("Yes")
-			.setStyle("SUCCESS")
-			.setEmoji("👍"),
+		new MessageButton().setCustomId("yes5man").setLabel("Yes").setStyle("SUCCESS").setEmoji("👍"),
 
-		new MessageButton()
-			.setCustomId("maybe5man")
-			.setLabel("Maybe")
-			.setStyle("PRIMARY")
-			.setEmoji("🤷"),
+		new MessageButton().setCustomId("maybe5man").setLabel("Maybe").setStyle("PRIMARY").setEmoji("🤷"),
 
-		new MessageButton()
-			.setCustomId("no5man")
-			.setLabel("No")
-			.setStyle("DANGER")
-			.setEmoji("👎")
+		new MessageButton().setCustomId("no5man").setLabel("No").setStyle("DANGER").setEmoji("👎")
 	);
 	return buttons;
 };
 
-const createString = (
-	yesEntry: string[],
-	maybeEntry: string[],
-	noEntry: string[]
-) => {
+const createString = (yesEntry: string[], maybeEntry: string[], noEntry: string[]) => {
 	// For Yes
 	let yesString: string;
 	let noString: string;

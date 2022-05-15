@@ -4,9 +4,7 @@ import { CommandInterface } from "src/interfaces/CommandInterface";
 import { unsubscribeUser } from "../modules/users";
 
 export const unsubscribe: CommandInterface = {
-	data: new SlashCommandBuilder()
-		.setName("unsubscribe")
-		.setDescription("Unsubscribe to not get notified by the Scheduler!"),
+	data: new SlashCommandBuilder().setName("unsubscribe").setDescription("Unsubscribe to not get notified by the Scheduler!"),
 
 	run: async (interaction) => {
 		await unsubscribeUser(interaction.user.id);

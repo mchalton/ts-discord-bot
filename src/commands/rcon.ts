@@ -8,12 +8,7 @@ export const rcon: CommandInterface = {
 	data: new SlashCommandBuilder()
 		.setName("rcon")
 		.setDescription("Send a command to the Server")
-		.addStringOption((option) =>
-			option
-				.setName("command")
-				.setDescription("Enter a Rcon Command")
-				.setRequired(true)
-		) as SlashCommandBuilder,
+		.addStringOption((option) => option.setName("command").setDescription("Enter a Rcon Command").setRequired(true)) as SlashCommandBuilder,
 
 	run: async (interaction) => {
 		const user = await getUserData(interaction.user.id);
@@ -23,14 +18,8 @@ export const rcon: CommandInterface = {
 
 			const fs = require("fs");
 
-			const serverIP = fs.readFileSync(
-				"commands/serverinfo/serverinfo.txt",
-				"utf8"
-			);
-			const serverPW = fs.readFileSync(
-				"commands/serverinfo/serverpw.txt",
-				"utf8"
-			);
+			const serverIP = fs.readFileSync("commands/serverinfo/serverinfo.txt", "utf8");
+			const serverPW = fs.readFileSync("commands/serverinfo/serverpw.txt", "utf8");
 
 			var conn = new Rcon(serverIP, 27015, serverPW);
 
