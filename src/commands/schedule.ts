@@ -1,6 +1,6 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { CommandInterface } from "../interfaces/CommandInterface";
-import { MessageActionRow, MessageButton, MessageEmbed, ColorResolvable, TextChannel } from "discord.js";
+import { MessageActionRow, MessageButton, MessageEmbed, ColorResolvable, TextChannel, Message} from "discord.js";
 import { getSubscribers, isAdmin } from "../modules/users";
 
 export const schedule: CommandInterface = {
@@ -42,7 +42,9 @@ export const schedule: CommandInterface = {
 		const timeScheduled = interaction.options.getString("time")!;
 		const [countdownHour, countdownMinute, totalMinutes, epochTime] = getCountdown(timeScheduled);
 
-		const epochTimeStr = epochTime.toString().slice(0, -3);
+		const epochTimeAsDate = epochTime as Date;
+
+		const epochTimeStr = String(epochTimeAsDate.getTime()).slice(0, -3);
 
 		// Embed
 		const mainEmbed = new MessageEmbed()
@@ -75,17 +77,19 @@ export const schedule: CommandInterface = {
 			new MessageButton().setCustomId("update").setStyle("SECONDARY").setEmoji("🔄")
 		);
 
+		const channelName = (interaction.channel as TextChannel).name;
+		console.log(`Schedule triggered by ${interaction.user.tag} in #${channelName}.`);
 		await interaction.reply({
 			content: mentionSubs,
 			embeds: [mainEmbed],
 			components: [buttons],
 		});
 
-		const channelName = (interaction.channel as TextChannel).name;
-		console.log(`Schedule triggered by ${interaction.user.tag} in #${channelName}.`);
+		const reply = await interaction.fetchReply() as Message
 
-		const interactionTimeout = (30 + totalMinutes) * 60 * 1000;
-		const collector = interaction.channel.createMessageComponentCollector({
+		const totalMinutesNum = totalMinutes as number;
+		const interactionTimeout = (30 + totalMinutesNum) * 60 * 1000;
+		const collector = reply.createMessageComponentCollector({
 			time: interactionTimeout,
 		});
 
@@ -212,6 +216,8 @@ const createEmbed = (yesString: string, noString: string, timeScheduled: string,
 	} else {
 		var countdownOutput = `Started!`;
 	}
+	const epochTimeAsDate = epochTime as Date;
+	const epochTimeStr = String(epochTimeAsDate.getTime()).slice(0, -3);
 
 	var mainEmbed = new MessageEmbed()
 		.setColor("0xFF6F00" as ColorResolvable)
@@ -219,7 +225,7 @@ const createEmbed = (yesString: string, noString: string, timeScheduled: string,
 		.setURL("https://10man.commoncrayon.com/")
 		.setDescription("Join a 10 Man!")
 		.addFields(
-			{ name: "Time:", value: `<t:${epochTime}>` },
+			{ name: "Time:", value: `<t:${epochTimeStr}>` },
 			{ name: "🔄 Countdown:", value: countdownOutput },
 			{
 				name: `__Yes(${yesEntry.length}):__`,
@@ -283,33 +289,36 @@ const createString = (yesEntry: string[], noEntry: string[]) => {
 };
 
 const getCountdown = (timeScheduled: string) => {
+	const convertMsToHM = (milliseconds: number) => {
+		let seconds = Math.floor(milliseconds / 1000);
+		let minutes = Math.floor(seconds / 60);
+		const totalMinutes = minutes;
+		let hours = Math.floor(minutes / 60);
+		seconds = seconds % 60;
+		minutes = seconds >= 30 ? minutes + 1 : minutes;
+		minutes = minutes % 60;
+		return [hours, minutes, totalMinutes];
+	};
+
 	const scheduledTimeArray = timeScheduled.split(":");
 
-	var d = new Date();
-	var cetHour = d.getUTCHours() + 2; //CHANGE FOR CET/CEST
-	var cetMinute = d.getUTCMinutes();
+	const localScheduleHour = parseInt(scheduledTimeArray[0], 10);
+	const localScheduleMin = parseInt(scheduledTimeArray[1], 10);
+	const localScheduledTime = new Date();
+	localScheduledTime.setHours(localScheduleHour, localScheduleMin, 0, 0);
 
-	var cetTime = cetHour * 60 + cetMinute;
+	const utcScheduleHour = localScheduledTime.getUTCHours();
+	const utcScheduleMin = localScheduledTime.getUTCMinutes();
+	const utcScheduledTime = new Date();
+	utcScheduledTime.setHours(utcScheduleHour, utcScheduleMin);
 
-	var integerUTCHour = parseInt(scheduledTimeArray[0], 10);
-	var integerUTCMin = parseInt(scheduledTimeArray[1], 10);
-	var integerCET = cetTime;
+	const currDate = new Date();
 
-	const scheduledMinutes = integerUTCHour * 60 + integerUTCMin;
+	const duration = localScheduledTime.getTime() - currDate.getTime();
 
-	const totalMinutes = scheduledMinutes - integerCET;
+	const asHM = convertMsToHM(duration);
 
-	const countdownHour = Math.floor(totalMinutes / 60);
-	const countdownMinute = totalMinutes - countdownHour * 60;
-
-	// Get Epoch Time
-	const epochTime = new Date();
-	console.log(integerUTCHour);
-	console.log(integerUTCMin);
-	epochTime.setHours(integerUTCHour + 10, integerUTCMin, 0, 0); // CET/CEST might change things!
-
-	const epochTimeNum = epochTime.getTime();
-	return [countdownHour, countdownMinute, totalMinutes, epochTimeNum];
+	return [asHM[0], asHM[1], asHM[2], localScheduledTime];
 };
 
 const assignPriority = (user: string) => {
