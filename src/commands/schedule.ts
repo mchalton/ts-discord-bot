@@ -1,29 +1,19 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { CommandInterface } from "../interfaces/CommandInterface";
-import {
-	MessageActionRow,
-	MessageButton,
-	MessageEmbed,
-	ColorResolvable,
-	TextChannel,
-} from "discord.js";
-import { getUserData, getSubscribers } from "../modules/users";
+import { MessageActionRow, MessageButton, MessageEmbed, ColorResolvable, TextChannel } from "discord.js";
+import { getSubscribers, isAdmin } from "../modules/users";
 
 export const schedule: CommandInterface = {
 	data: new SlashCommandBuilder()
 		.setName("schedule")
 		.setDescription("Schedules 10man!")
-		.addStringOption((option) =>
-			option
-				.setName("time")
-				.setDescription("Enter a Time (20:30)")
-				.setRequired(true)
-		) as SlashCommandBuilder,
+		.addStringOption((option) => option.setName("time").setDescription("Enter a Time (20:30)").setRequired(true)) as SlashCommandBuilder,
 
 	run: async (interaction) => {
 		if (!interaction.channel) return;
-		const userData = await getUserData(interaction.user.id);
-		if (!userData || !userData.isAdmin) {
+
+		const admin = await isAdmin(interaction.user.id);
+		if (!admin) {
 			// Missing Perms
 			var deniedEmbed = new MessageEmbed()
 				.setColor("0xFF6F00" as ColorResolvable)
@@ -50,8 +40,7 @@ export const schedule: CommandInterface = {
 		const noEntry: string[] = [];
 
 		const timeScheduled = interaction.options.getString("time")!;
-		const [countdownHour, countdownMinute, totalMinutes, epochTime] =
-			getCountdown(timeScheduled);
+		const [countdownHour, countdownMinute, totalMinutes, epochTime] = getCountdown(timeScheduled);
 
 		const epochTimeStr = epochTime.toString().slice(0, -3);
 
@@ -77,28 +66,13 @@ export const schedule: CommandInterface = {
 
 		// Buttons
 		const buttons = new MessageActionRow().addComponents(
-			new MessageButton()
-				.setCustomId("yes")
-				.setLabel("Yes")
-				.setStyle("SUCCESS")
-				.setEmoji("👍"),
+			new MessageButton().setCustomId("yes").setLabel("Yes").setStyle("SUCCESS").setEmoji("👍"),
 
-			new MessageButton()
-				.setCustomId("maybe")
-				.setLabel("Maybe")
-				.setStyle("PRIMARY")
-				.setEmoji("🔸"),
+			new MessageButton().setCustomId("maybe").setLabel("Maybe").setStyle("PRIMARY").setEmoji("🔸"),
 
-			new MessageButton()
-				.setCustomId("no")
-				.setLabel("No")
-				.setStyle("DANGER")
-				.setEmoji("👎"),
+			new MessageButton().setCustomId("no").setLabel("No").setStyle("DANGER").setEmoji("👎"),
 
-			new MessageButton()
-				.setCustomId("update")
-				.setStyle("SECONDARY")
-				.setEmoji("🔄")
+			new MessageButton().setCustomId("update").setStyle("SECONDARY").setEmoji("🔄")
 		);
 
 		await interaction.reply({
@@ -108,9 +82,7 @@ export const schedule: CommandInterface = {
 		});
 
 		const channelName = (interaction.channel as TextChannel).name;
-		console.log(
-			`Schedule triggered by ${interaction.user.tag} in #${channelName}.`
-		);
+		console.log(`Schedule triggered by ${interaction.user.tag} in #${channelName}.`);
 
 		const interactionTimeout = (30 + totalMinutes) * 60 * 1000;
 		const collector = interaction.channel.createMessageComponentCollector({
@@ -120,9 +92,7 @@ export const schedule: CommandInterface = {
 		collector.on("collect", async (i) => {
 			let user = i.user.username;
 			const buttonClicked = i.customId;
-			console.log(
-				`Schedule Button Clicked:\n   User: ${user}\n   ButtonClicked: ${buttonClicked}`
-			);
+			console.log(`Schedule Button Clicked:\n   User: ${user}\n   ButtonClicked: ${buttonClicked}`);
 
 			user = assignPriority(user);
 
@@ -144,13 +114,7 @@ export const schedule: CommandInterface = {
 				yesEntry.push(user);
 
 				let [yesString, noString] = createString(yesEntry, noEntry); //array size
-				let mainEmbed = createEmbed(
-					yesString,
-					noString,
-					timeScheduled,
-					yesEntry,
-					noEntry
-				);
+				let mainEmbed = createEmbed(yesString, noString, timeScheduled, yesEntry, noEntry);
 				let buttons = createButton();
 
 				await i.editReply({
@@ -175,13 +139,7 @@ export const schedule: CommandInterface = {
 				yesEntry.push(user + " 🔸");
 
 				let [yesString, noString] = createString(yesEntry, noEntry);
-				let mainEmbed = createEmbed(
-					yesString,
-					noString,
-					timeScheduled,
-					yesEntry,
-					noEntry
-				);
+				let mainEmbed = createEmbed(yesString, noString, timeScheduled, yesEntry, noEntry);
 				let buttons = createButton();
 
 				await i.editReply({
@@ -206,13 +164,7 @@ export const schedule: CommandInterface = {
 				noEntry.push(user);
 
 				let [yesString, noString] = createString(yesEntry, noEntry);
-				let mainEmbed = createEmbed(
-					yesString,
-					noString,
-					timeScheduled,
-					yesEntry,
-					noEntry
-				);
+				let mainEmbed = createEmbed(yesString, noString, timeScheduled, yesEntry, noEntry);
 				let buttons = createButton();
 
 				await i.editReply({
@@ -223,13 +175,7 @@ export const schedule: CommandInterface = {
 				await i.deferUpdate();
 
 				let [yesString, noString] = createString(yesEntry, noEntry);
-				let mainEmbed = createEmbed(
-					yesString,
-					noString,
-					timeScheduled,
-					yesEntry,
-					noEntry
-				);
+				let mainEmbed = createEmbed(yesString, noString, timeScheduled, yesEntry, noEntry);
 				let buttons = createButton();
 
 				await i.editReply({
@@ -244,26 +190,11 @@ export const schedule: CommandInterface = {
 			console.log("Ended Schedule Message");
 
 			var buttons = new MessageActionRow().addComponents(
-				new MessageButton()
-					.setCustomId("yes")
-					.setLabel("Yes")
-					.setStyle("SUCCESS")
-					.setEmoji("👍")
-					.setDisabled(true),
+				new MessageButton().setCustomId("yes").setLabel("Yes").setStyle("SUCCESS").setEmoji("👍").setDisabled(true),
 
-				new MessageButton()
-					.setCustomId("maybe")
-					.setLabel("Maybe")
-					.setStyle("PRIMARY")
-					.setEmoji("🤷")
-					.setDisabled(true),
+				new MessageButton().setCustomId("maybe").setLabel("Maybe").setStyle("PRIMARY").setEmoji("🤷").setDisabled(true),
 
-				new MessageButton()
-					.setCustomId("no")
-					.setLabel("No")
-					.setStyle("DANGER")
-					.setEmoji("👎")
-					.setDisabled(true)
+				new MessageButton().setCustomId("no").setLabel("No").setStyle("DANGER").setEmoji("👎").setDisabled(true)
 			);
 
 			await interaction.editReply({
@@ -273,15 +204,8 @@ export const schedule: CommandInterface = {
 	},
 };
 
-const createEmbed = (
-	yesString: string,
-	noString: string,
-	timeScheduled: string,
-	yesEntry: string[],
-	noEntry: string[]
-) => {
-	let [countdownHour, countdownMinute, totalMinutes, epochTime] =
-		getCountdown(timeScheduled);
+const createEmbed = (yesString: string, noString: string, timeScheduled: string, yesEntry: string[], noEntry: string[]) => {
+	let [countdownHour, countdownMinute, totalMinutes, epochTime] = getCountdown(timeScheduled);
 
 	if (totalMinutes > 0) {
 		var countdownOutput = `Starting in ${countdownHour}H ${countdownMinute}M`;
@@ -317,28 +241,13 @@ const createEmbed = (
 
 const createButton = () => {
 	var buttons = new MessageActionRow().addComponents(
-		new MessageButton()
-			.setCustomId("yes")
-			.setLabel("Yes")
-			.setStyle("SUCCESS")
-			.setEmoji("👍"),
+		new MessageButton().setCustomId("yes").setLabel("Yes").setStyle("SUCCESS").setEmoji("👍"),
 
-		new MessageButton()
-			.setCustomId("maybe")
-			.setLabel("Maybe")
-			.setStyle("PRIMARY")
-			.setEmoji("🔸"),
+		new MessageButton().setCustomId("maybe").setLabel("Maybe").setStyle("PRIMARY").setEmoji("🔸"),
 
-		new MessageButton()
-			.setCustomId("no")
-			.setLabel("No")
-			.setStyle("DANGER")
-			.setEmoji("👎"),
+		new MessageButton().setCustomId("no").setLabel("No").setStyle("DANGER").setEmoji("👎"),
 
-		new MessageButton()
-			.setCustomId("update")
-			.setStyle("SECONDARY")
-			.setEmoji("🔄")
+		new MessageButton().setCustomId("update").setStyle("SECONDARY").setEmoji("🔄")
 	);
 	return buttons;
 };
@@ -395,6 +304,8 @@ const getCountdown = (timeScheduled: string) => {
 
 	// Get Epoch Time
 	const epochTime = new Date();
+	console.log(integerUTCHour);
+	console.log(integerUTCMin);
 	epochTime.setHours(integerUTCHour + 10, integerUTCMin, 0, 0); // CET/CEST might change things!
 
 	const epochTimeNum = epochTime.getTime();
