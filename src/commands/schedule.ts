@@ -87,6 +87,16 @@ export const schedule: CommandInterface = {
 
 		const reply = await interaction.fetchReply() as Message
 
+		setInterval(() => {
+			let [yesString, noString] = createString(yesEntry, noEntry); //array size
+			let mainEmbed = createEmbed(yesString, noString, timeScheduled, yesEntry, noEntry);
+			let buttons = createButton();
+			reply.edit({
+				embeds: [mainEmbed],
+				components: [buttons],
+			});
+		}, 6000);
+
 		const totalMinutesNum = totalMinutes as number;
 		const interactionTimeout = (30 + totalMinutesNum) * 60 * 1000;
 		const collector = reply.createMessageComponentCollector({
